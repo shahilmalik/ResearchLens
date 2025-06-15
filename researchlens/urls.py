@@ -22,5 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/start-preprocess/', start_fetch, name='start_fetch'),
     path("api/paper/", PaperListView.as_view()),
-    path("api/related/<int:paper_id>", RelatedPapersView.as_view()),
+    path("api/related/<int:paper_id>/", RelatedPapersView.as_view()),
 ]
