@@ -1,0 +1,58 @@
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    container_name: backend
+    command: >
+      sh -c "python manage.py collectstatic --noinput &&
+            python manage.py migrate &&
+            gunicorn researchlens.wsgi:application --bind 0.0.0.0:8000"
+
+    volumes:
+      - ./backend:/app
+      - static_volume:/app/staticfiles
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+
+  celery:
+    build:
+      context: .
+      dockerfile: docker/celery.Dockerfile
+    container_name: celery
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - backend
+      - redis
+      - db
+    env_file:
+      - .env
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  db:
+    build: .
+    container_name: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
+  static_volume:
