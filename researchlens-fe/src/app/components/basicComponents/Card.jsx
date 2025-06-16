@@ -15,7 +15,7 @@ export default function MediaCard({ data, learnMore = false }) {
   const handleClickOpen = () => {
     setOpen(true);
   };
-  const keywordArray = data.keywords.split(",").map((k) => k.trim());
+  const keywordArray = data.keywords.map((k) => k.trim());
   console.log("Key:", keywordArray);
   return (
     <Card
