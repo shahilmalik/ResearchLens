@@ -42,12 +42,12 @@ services:
       - "6379:6379"
 
   db:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/database.Dockerfile
     container_name: postgres
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+    env_file:
+      - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:

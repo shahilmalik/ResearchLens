@@ -81,11 +81,11 @@ WSGI_APPLICATION = 'researchlens.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB', 'researchlens'),
-        'USER': os.getenv('USER', 'postgres'),
-        'PASSWORD': os.getenv('PASSWORD', 'password'),
-        'HOST': os.getenv('HOST', 'db'),
-        'PORT': os.getenv('PORT', '5432'),
+        'NAME': os.getenv('POSTGRES_DB', 'researchlens'),
+        'USER': os.getenv('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'password'),
+        'HOST': os.getenv('POSTGRES_HOST', 'db'),
+        'PORT': os.getenv('POSTGRES_PORT', '5432'),
     }
 }
 
