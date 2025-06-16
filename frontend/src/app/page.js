@@ -8,7 +8,7 @@ import Search from './components/basicComponents/Search'
 import MultipleSelectChip from './components/basicComponents/MultiSelectChip'
 import Dialogs from './components/basicComponents/DialogPage'
 
-function page() {
+function Page() {
   const [data, setData] = useState(null)
   const [isLoading, setLoading] = useState(true)
  
@@ -75,4 +75,4 @@ function page() {
   )
 }
 
-export default page
+export default Page
