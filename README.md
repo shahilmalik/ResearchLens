@@ -34,4 +34,4 @@ docker compose build
 docker compose up
 ```
 
-5. The backend can be accessed at `http://localhost:8000`.
+5. The frontend can be accessed at `http://localhost:3000` and backend at `http://localhost:8000`.

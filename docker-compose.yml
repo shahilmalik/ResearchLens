@@ -53,6 +53,15 @@ services:
     ports:
       - "5432:5432"
 
+  fe:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+
 volumes:
   postgres_data:
   static_volume:
