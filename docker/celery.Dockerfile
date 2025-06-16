@@ -3,7 +3,6 @@ FROM python:3.11-slim
 WORKDIR /app
 
 COPY backend/ /app
-COPY .env /app/.env
 
 # Install netcat (nc)
 RUN apt-get update && apt-get install -y netcat-openbsd
