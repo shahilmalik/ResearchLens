@@ -38,7 +38,7 @@ function getStyles(name, personName, theme) {
   };
 }
 
-export default function MultipleSelectChip() {
+export default function MultipleSelectChip({categoryChange}) {
   const theme = useTheme();
   const [personName, setPersonName] = React.useState([]);
 
@@ -50,6 +50,7 @@ export default function MultipleSelectChip() {
       // On autofill we get a stringified value.
       typeof value === "string" ? value.split(",") : value
     );
+    categoryChange(value); // Call the onChange prop with the selected values
   };
 
   return (

@@ -33,18 +33,15 @@ export default function Dialogs({ open, setOpen, paperId}) {
     setOpen(false);
   };
 
-  console.log("Dialog component render - open state:", open);
   const [data, setData] = useState(null)
   const [isLoading, setLoading] = useState(true)
   
-  console.log("Paper ID in Dialogs component:", paperId);
   useEffect(() => {
     fetch(`http://localhost:8000/api/related/${paperId}/`, {method: 'GET'})
       .then((res) => res.json())
       .then((data) => {
         setData(data)
         setLoading(false)
-        console.log(data)
       })
   }, [])
 

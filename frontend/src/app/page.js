@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import FreeSolo from './components/basicComponents/Search'
 import MediaCard from './components/basicComponents/Card'
 import BasicDateRangePicker from './components/basicComponents/DateRange'
@@ -8,8 +8,20 @@ import Search from './components/basicComponents/Search'
 import MultipleSelectChip from './components/basicComponents/MultiSelectChip'
 import Dialogs from './components/basicComponents/DialogPage'
 import CircularProgress from '@mui/material/CircularProgress';
+import Button from '@mui/material/Button';
+import SearchIcon from '@mui/icons-material/Send';
+
+// pagination
+import Pagination from '@mui/material/Pagination';
+import PaginationItem from '@mui/material/PaginationItem';
+import Stack from '@mui/material/Stack';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+
 
 function Page() {
+  var query = useRef("")
+  var categories = useRef([])
   const [data, setData] = useState(null)
   const [isLoading, setLoading] = useState(true)
  
@@ -19,19 +31,46 @@ function Page() {
       .then((data) => {
         setData(data)
         setLoading(false)
-        console.log(data)
       })
   }, [])
+
+  // update query when search input is changed
+  function searchChange(e) {
+    query.current = e.target.value
+  }
+
+  // update category when category is changed
+  function categoryChange(cat) {
+    categories.current = cat
+  }
+
+  function load(e) {
+    // create search url
+    const params = new URLSearchParams()
+    if (query.current) params.append('search', query.current)
+    if (categories.current.length > 0) params.append('categories', categories.current.join(','))
+    const url = `http://localhost:8000/api/paper/${params.toString() ? '?' + params.toString() : ''}`
+    console.log("Search URL: ", url)
+    setLoading(true)
+    setData(null)
+    fetch(url, {method: 'GET'})
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data)
+        setLoading(false)
+      })
+  }
 
   // show spinner while loading
   if (isLoading){
     return (
       <div className='p-4 flex flex-col gap-4'>
       <div className='flex items-center gap-4 justify-between'>
-      <Search/>   
+      <Search onChange={searchChange}/>   
       <BasicDatePicker label="From Date"/>   
       <BasicDatePicker label="To Date"/>
-      <MultipleSelectChip/>
+      <MultipleSelectChip onChange={e => alert(e)}/>
+      <button type="submit" onChange={load}>Search</button>
       </div>
       <div className="flex flex-1 items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-4">
@@ -46,14 +85,15 @@ function Page() {
     return (
       <div className='p-4 flex flex-col gap-4'>
       <div className='flex items-center gap-4 justify-between'>
-      <Search/>   
+      <Search onChange={searchChange}/>
       <BasicDatePicker label="From Date"/>   
       <BasicDatePicker label="To Date"/>
-      <MultipleSelectChip/>
+      <MultipleSelectChip onChange={e => alert(e)}/>
+      <button type="submit" onChange={load}>Search</button>
       </div>
       <div className="flex flex-1 items-center justify-center min-h-[60vh]">
       <div className="flex flex-col items-center gap-4">
-        <span className="text-lg text-gray-600">No articles to show :(</span>
+        <span className="text-lg text-gray-600">Something went wrong. Cloud not fetch data from backend :(</span>
       </div>
       </div>
       </div>
@@ -63,20 +103,58 @@ function Page() {
   return (
     <div className='p-4 flex flex-col gap-4'>
       <div className='flex items-center gap-4 justify-between'>
-      <Search/>   
+      <Search onChange={searchChange} onEnter={load}/>
       <BasicDatePicker label="From Date"/>   
       <BasicDatePicker label="To Date"/>   
       {/* <BasicDatePicker/> */}
-      <MultipleSelectChip/>
+      <MultipleSelectChip categoryChange={categoryChange}/>
+      <Button
+        variant="contained"
+        endIcon={<SearchIcon />}
+        onClick={load}>
+        Search
+      </Button>
       </div>
+      <p>Found {data.total_items} articles.</p>
       <div className='flex gap-4 p-4' >
-        {data.results.map((data,index)=>(
+        {data.results.length > 0
+        ? data.results.map((data,index)=>(
           // <div  >
             <MediaCard key={index} data={data} learnMore />
           // </div>
-        ))}
+        ))
+        : <div className="flex flex-1 items-center justify-center min-h-[60vh]">
+            <div className="flex flex-col items-center gap-4">
+              <span className="text-lg text-gray-600">No articles to show :(</span>
+            </div>
+          </div>
+      }
       </div>
         {/* <Dialogs open={open} setOpen={setOpen} /> */}
+      <div className='flex justify-center mt-10 mb-10'>
+      <Stack spacing={2}>
+      <Pagination
+        count={data.total_pages}
+        size={"large"}
+        page={data.current_page}
+        onChange={(event, value) => {
+          setLoading(true)
+          fetch(`http://localhost:8000/api/paper/?page=${value}`, {method: 'GET'})
+            .then((res) => res.json())
+            .then((data) => {
+              setData(data)
+              setLoading(false)
+            })
+        }}
+        renderItem={(item) => (
+          <PaginationItem
+            slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
+            {...item}
+          />
+        )}
+      />
+    </Stack>
+    </div>
     </div>
   )
 }
