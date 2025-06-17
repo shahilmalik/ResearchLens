@@ -44,11 +44,12 @@ function Page() {
     categories.current = cat
   }
 
-  function load(e) {
+  function load(page) {
     // create search url
     const params = new URLSearchParams()
     if (query.current) params.append('search', query.current)
     if (categories.current.length > 0) params.append('categories', categories.current.join(','))
+    if (page > 0) params.append('page', page)
     const url = `http://localhost:8000/api/paper/${params.toString() ? '?' + params.toString() : ''}`
     console.log("Search URL: ", url)
     setLoading(true)
@@ -66,10 +67,10 @@ function Page() {
     return (
       <div className='p-4 flex flex-col gap-4'>
       <div className='flex items-center gap-4 justify-between'>
-      <Search onChange={searchChange}/>   
+      <Search onChange={searchChange} onEnter={() => load(0)}/>
       <BasicDatePicker label="From Date"/>   
       <BasicDatePicker label="To Date"/>
-      <MultipleSelectChip onChange={e => alert(e)}/>
+      <MultipleSelectChip categoryChange={categoryChange}/>
       <button type="submit" onChange={load}>Search</button>
       </div>
       <div className="flex flex-1 items-center justify-center min-h-[60vh]">
@@ -85,10 +86,10 @@ function Page() {
     return (
       <div className='p-4 flex flex-col gap-4'>
       <div className='flex items-center gap-4 justify-between'>
-      <Search onChange={searchChange}/>
+      <Search onChange={searchChange} onEnter={() => load(0)}/>
       <BasicDatePicker label="From Date"/>   
       <BasicDatePicker label="To Date"/>
-      <MultipleSelectChip onChange={e => alert(e)}/>
+      <MultipleSelectChip categoryChange={categoryChange}/>
       <button type="submit" onChange={load}>Search</button>
       </div>
       <div className="flex flex-1 items-center justify-center min-h-[60vh]">
@@ -103,10 +104,9 @@ function Page() {
   return (
     <div className='p-4 flex flex-col gap-4'>
       <div className='flex items-center gap-4 justify-between'>
-      <Search onChange={searchChange} onEnter={load}/>
+      <Search onChange={searchChange} onEnter={() => load(0)}/>
       <BasicDatePicker label="From Date"/>   
       <BasicDatePicker label="To Date"/>   
-      {/* <BasicDatePicker/> */}
       <MultipleSelectChip categoryChange={categoryChange}/>
       <Button
         variant="contained"
@@ -119,9 +119,7 @@ function Page() {
       <div className='flex gap-4 p-4' >
         {data.results.length > 0
         ? data.results.map((data,index)=>(
-          // <div  >
             <MediaCard key={index} data={data} learnMore />
-          // </div>
         ))
         : <div className="flex flex-1 items-center justify-center min-h-[60vh]">
             <div className="flex flex-col items-center gap-4">
@@ -137,15 +135,7 @@ function Page() {
         count={data.total_pages}
         size={"large"}
         page={data.current_page}
-        onChange={(event, value) => {
-          setLoading(true)
-          fetch(`http://localhost:8000/api/paper/?page=${value}`, {method: 'GET'})
-            .then((res) => res.json())
-            .then((data) => {
-              setData(data)
-              setLoading(false)
-            })
-        }}
+        onChange={(event, value) => load(value)}
         renderItem={(item) => (
           <PaginationItem
             slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
