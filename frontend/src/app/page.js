@@ -22,6 +22,8 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 function Page() {
   var query = useRef("")
   var categories = useRef([])
+  var startDate = useRef(null)
+  var endDate = useRef(null)
   const [data, setData] = useState(null)
   const [isLoading, setLoading] = useState(true)
  
@@ -44,12 +46,27 @@ function Page() {
     categories.current = cat
   }
 
+  // update query when date is changed
+  function startDateChange(date) {
+    startDate.current = date
+  }
+
+  // update query when date is changed
+  function endDateChange(date) {
+    endDate.current = date
+  }
+
+  // load data from backend with search parameters
   function load(page) {
     // create search url
     const params = new URLSearchParams()
+    if (page > 0) params.append('page', page)
     if (query.current) params.append('search', query.current)
     if (categories.current.length > 0) params.append('categories', categories.current.join(','))
-    if (page > 0) params.append('page', page)
+    if (startDate.current) params.append('start_date', startDate.current.toISOString().split('T')[0])
+    if (endDate.current) params.append('end_date', endDate.current.toISOString().split('T')[0])
+    if (categories.current.length > 0) params.append('categories', categories.current.join(','))
+    
     const url = `http://localhost:8000/api/paper/${params.toString() ? '?' + params.toString() : ''}`
     console.log("Search URL: ", url)
     setLoading(true)
@@ -105,8 +122,8 @@ function Page() {
     <div className='p-4 flex flex-col gap-4'>
       <div className='flex items-center gap-4 justify-between'>
       <Search onChange={searchChange} onEnter={() => load(0)}/>
-      <BasicDatePicker label="From Date"/>   
-      <BasicDatePicker label="To Date"/>   
+      <BasicDatePicker label="From Date" onChange={startDateChange}/>   
+      <BasicDatePicker label="To Date" onChange={endDateChange}/>   
       <MultipleSelectChip categoryChange={categoryChange}/>
       <Button
         variant="contained"
