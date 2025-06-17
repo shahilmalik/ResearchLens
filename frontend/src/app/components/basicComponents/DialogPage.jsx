@@ -10,6 +10,8 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
 import MediaCard from "./Card";
+import { useState, useEffect } from 'react'
+import CircularProgress from '@mui/material/CircularProgress';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -20,7 +22,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-export default function Dialogs({ open, setOpen }) {
+export default function Dialogs({ open, setOpen, paperId}) {
   //   const [open, setOpen] = React.useState(false);
 
   //   const handleClickOpen = () => {
@@ -31,36 +33,108 @@ export default function Dialogs({ open, setOpen }) {
     setOpen(false);
   };
 
-  console.log("Dialog component render - open state:", open);
-  const data = {
-    status: "success",
-    current_page: 1,
-    total_pages: 3,
-    total_items: 6,
-    results: [
-      {
-        id: 1,
-        title: "Deep Learning for NLP",
-        abstract:
-          "This paper explores the use of deep learning methods for NLP tasks.",
-        keywords: "deep learning, NLP, neural networks",
-        authors: ["Alice Smith", "Bob Johnson"],
-        link: "https://arxiv.org/abs/1234.5678",
-        categories: "cs.CL",
-        published_date: "2023-08-14",
-      },
-      {
-        id: 2,
-        title: "Quantum Algorithms in Practice",
-        abstract: "A practical approach to quantum algorithms with examples.",
-        keywords: "quantum computing, algorithms",
-        authors: ["Carol Davis"],
-        link: "https://arxiv.org/abs/2345.6789",
-        categories: "quant-ph",
-        published_date: "2023-08-15",
-      },
-    ],
-  };
+  const [data, setData] = useState(null)
+  const [isLoading, setLoading] = useState(true)
+  
+  useEffect(() => {
+    fetch(`http://localhost:8000/api/related/${paperId}/`, {method: 'GET'})
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data)
+        setLoading(false)
+      })
+  }, [])
+
+  // show spinner while loading
+  if (isLoading){
+    return (
+    <>
+      <Dialog
+        PaperProps={{
+          sx: {
+            width: "80%", // ✅ Set custom width here
+            maxWidth: "none", // ✅ Prevent MUI's default max-width limit
+            height: "80%",
+          },
+        }}
+        sx={{ width: "100vw" }}
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+          Related Articles
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={(theme) => ({
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          })}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers>
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-1 items-center justify-center min-h-[60vh]">
+              <div className="flex flex-col items-center gap-4">
+                <CircularProgress size={100} thickness={2.0} />
+                <span className="text-lg text-gray-600">Loading related articles...</span>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+  // no data found
+  } else if (!data){
+    return (
+    <>
+      <Dialog
+        PaperProps={{
+          sx: {
+            width: "80%", // ✅ Set custom width here
+            maxWidth: "none", // ✅ Prevent MUI's default max-width limit
+            height: "80%",
+          },
+        }}
+        sx={{ width: "100vw" }}
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+          Related Articles
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={(theme) => ({
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          })}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers>
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-1 items-center justify-center min-h-[60vh]">
+              <div className="flex flex-col items-center gap-4">
+                <span className="text-lg text-gray-600">No related articles available :(</span>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+    );
+  }
   return (
     <>
       <Dialog
@@ -93,7 +167,7 @@ export default function Dialogs({ open, setOpen }) {
         </IconButton>
         <DialogContent dividers>
           <div className="flex gap-4 p-4">
-            {data.results.map((data, index) => (
+            {data.map((data, index) => (
               // <div  >
               <MediaCard key={index} data={data} />
               // </div>

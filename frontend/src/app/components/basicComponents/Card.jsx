@@ -16,7 +16,6 @@ export default function MediaCard({ data, learnMore = false }) {
     setOpen(true);
   };
   const keywordArray = data.keywords.map((k) => k.trim());
-  console.log("Key:", keywordArray);
   return (
     <Card
       sx={{
@@ -94,7 +93,7 @@ export default function MediaCard({ data, learnMore = false }) {
           )}
         </div>
       </div>
-      <Dialogs open={open} setOpen={setOpen} />
+      <Dialogs open={open} setOpen={setOpen} paperId={data.id}/>
     </Card>
   );
 }
