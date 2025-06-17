@@ -94,7 +94,7 @@ export default function MediaCard({ data, learnMore = false }) {
           )}
         </div>
       </div>
-      <Dialogs open={open} setOpen={setOpen} />
+      <Dialogs open={open} setOpen={setOpen} paperId={data.id}/>
     </Card>
   );
 }
