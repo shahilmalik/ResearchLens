@@ -9,7 +9,7 @@ import MultipleSelectChip from './components/basicComponents/MultiSelectChip'
 import Dialogs from './components/basicComponents/DialogPage'
 import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
-import SearchIcon from '@mui/icons-material/Send';
+import SearchIcon from '@mui/icons-material/Search';
 
 // pagination
 import Pagination from '@mui/material/Pagination';
