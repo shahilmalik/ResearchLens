@@ -1,3 +1,9 @@
+/*
+This is a React component that renders a media card with details about a paper.
+It includes the title, abstract, publication date, categories, authors, keywords,
+and buttons to learn more or show related papers.
+*/
+
 "use client";
 import * as React from "react";
 import Card from "@mui/material/Card";
@@ -19,11 +25,11 @@ export default function MediaCard({ data, learnMore = false }) {
   return (
     <Card
       sx={{
-        maxWidth: 345,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
         backgroundColor: "#EEEEEE",
+        marginBottom: "50px",
       }}
     >
       <CardContent className="flex flex-col gap-1">
@@ -68,7 +74,7 @@ export default function MediaCard({ data, learnMore = false }) {
             sx={{
               color: "#FF9B45",
               fontWeight: "bold",
-              width: "100%",
+              width: "150px",
               backgroundColor: "#333446",
             }}
             onClick={() => {
@@ -83,7 +89,7 @@ export default function MediaCard({ data, learnMore = false }) {
               sx={{
                 color: "#FF9B45",
                 fontWeight: "bold",
-                width: "100%",
+                width: "150px",
                 backgroundColor: "#333446",
               }}
               onClick={handleClickOpen}

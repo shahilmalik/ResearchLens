@@ -1,3 +1,8 @@
+/*
+This is a React component that renders a search input field.
+It allows users to type in a search query and triggers an action when the Enter key is pressed.
+*/
+
 import React from "react";
 
 function Search({onChange, onEnter}) {

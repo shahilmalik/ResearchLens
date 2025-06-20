@@ -26,7 +26,8 @@ function Page() {
   var endDate = useRef(null)
   const [data, setData] = useState(null)
   const [isLoading, setLoading] = useState(true)
- 
+
+  // load data from backend on initial render
   useEffect(() => {
     fetch("http://localhost:8000/api/paper/", {method: 'GET'})
       .then((res) => res.json())
@@ -66,11 +67,11 @@ function Page() {
     if (startDate.current) params.append('start_date', startDate.current.toISOString().split('T')[0])
     if (endDate.current) params.append('end_date', endDate.current.toISOString().split('T')[0])
     if (categories.current.length > 0) params.append('categories', categories.current.join(','))
-    
     const url = `http://localhost:8000/api/paper/${params.toString() ? '?' + params.toString() : ''}`
-    console.log("Search URL: ", url)
     setLoading(true)
     setData(null)
+
+    // fetch data from backend
     fetch(url, {method: 'GET'})
       .then((res) => res.json())
       .then((data) => {
@@ -133,10 +134,10 @@ function Page() {
       </Button>
       </div>
       <p>Found {data.total_items} articles.</p>
-      <div className='flex gap-4 p-4' >
+      <div className='gap-4 p-4'>
         {data.results.length > 0
         ? data.results.map((data,index)=>(
-            <MediaCard key={index} data={data} learnMore />
+              <MediaCard key={index} data={data} learnMore />
         ))
         : <div className="flex flex-1 items-center justify-center min-h-[60vh]">
             <div className="flex flex-col items-center gap-4">
@@ -146,7 +147,7 @@ function Page() {
       }
       </div>
         {/* <Dialogs open={open} setOpen={setOpen} /> */}
-      <div className='flex justify-center mt-10 mb-10'>
+      <div className='flex justify-center mb-10'>
       <Stack spacing={2}>
       <Pagination
         count={data.total_pages}

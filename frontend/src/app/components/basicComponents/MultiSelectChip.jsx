@@ -1,3 +1,7 @@
+/*
+This is a React component that renders a multi-select dropdown with chips for selecting categories.
+*/
+
 "use client";
 import * as React from "react";
 import { useTheme } from "@mui/material/styles";
@@ -60,10 +64,10 @@ export default function MultipleSelectChip({categoryChange}) {
           m: 1,
           width: 300,
           "& .MuiOutlinedInput-root": {
-            borderRadius: "10px", // ✅ Rounded corners
+            borderRadius: "10px",
             "& fieldset": {
-              borderColor: "black", // ✅ Default border
-              borderRadius: "10px", // ✅ Also apply radius to fieldset
+              borderColor: "black",
+              borderRadius: "10px",
             },
             "&:hover fieldset": {
               borderColor: "black",
@@ -78,7 +82,7 @@ export default function MultipleSelectChip({categoryChange}) {
           id="demo-multiple-chip-label"
           sx={{
             color: "black",
-            "&.Mui-focused": { color: "black" }, // 👈 Ensures label stays black on focus
+            "&.Mui-focused": { color: "black" },
           }}
         >
           Category

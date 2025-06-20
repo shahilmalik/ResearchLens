@@ -1,3 +1,8 @@
+/*
+This is a React component that renders a dialog to display related articles for a given paper. It uses the
+same styling and structure as the MediaCard component, but fetches related articles from an API endpoint.
+*/
+
 "use client";
 import * as React from "react";
 import Button from "@mui/material/Button";
@@ -52,8 +57,8 @@ export default function Dialogs({ open, setOpen, paperId}) {
       <Dialog
         PaperProps={{
           sx: {
-            width: "80%", // ✅ Set custom width here
-            maxWidth: "none", // ✅ Prevent MUI's default max-width limit
+            width: "80%",
+            maxWidth: "none",
             height: "80%",
           },
         }}
@@ -97,8 +102,8 @@ export default function Dialogs({ open, setOpen, paperId}) {
       <Dialog
         PaperProps={{
           sx: {
-            width: "80%", // ✅ Set custom width here
-            maxWidth: "none", // ✅ Prevent MUI's default max-width limit
+            width: "80%",
+            maxWidth: "none",
             height: "80%",
           },
         }}
@@ -140,8 +145,8 @@ export default function Dialogs({ open, setOpen, paperId}) {
       <Dialog
         PaperProps={{
           sx: {
-            width: "80%", // ✅ Set custom width here
-            maxWidth: "none", // ✅ Prevent MUI's default max-width limit
+            width: "80%",
+            maxWidth: "none",
             height: "80%",
           },
         }}
@@ -166,7 +171,7 @@ export default function Dialogs({ open, setOpen, paperId}) {
           <CloseIcon />
         </IconButton>
         <DialogContent dividers>
-          <div className="flex gap-4 p-4">
+          <div className="gap-4 p-4">
             {data.map((data, index) => (
               // <div  >
               <MediaCard key={index} data={data} />
