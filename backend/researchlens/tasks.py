@@ -10,32 +10,29 @@ from urllib3.util.retry import Retry
 import time
 
 @shared_task
-def run_data_preprocess():
+def run_data_preprocess(number_articles, categories):
     model = SentenceTransformer('all-MiniLM-L6-v2')
     kw_model = KeyBERT()
     # 1. Fetch and store papers
-    CATEGORIES = ['cs', 'math', 'stat', 'econ', 'physics', 'q-bio', 'q-fin']
     ARXIV_CATEGORY_MAP = {
-    'cs': 'Computer Science',
-    'math': 'Mathematics',
-    'stat': 'Statistics',
-    'econ': 'Economics',
-    'physics': 'Physics',
-    'q-bio': 'Quantitative Biology',
-    'q-fin': 'Quantitative Finance'
-}
+        'cs': 'Computer Science',
+        'math': 'Mathematics',
+        'stat': 'Statistics',
+        'econ': 'Economics',
+        'physics': 'Physics',
+        'q-bio': 'Quantitative Biology',
+        'q-fin': 'Quantitative Finance'
+    }
 
-
-    for cat in CATEGORIES:
+    for cat in categories:
         MAX_RESULTS_PER_PAGE = 100
-        TOTAL_RESULTS = 1000  # or more, if you want like 5000 per category
         category_name = ARXIV_CATEGORY_MAP.get(cat, cat)
 
-        for start in range(0, TOTAL_RESULTS, MAX_RESULTS_PER_PAGE):
+        for start in range(0, number_articles, MAX_RESULTS_PER_PAGE):
+            # URL to fetch papers from arXiv and header to identify our application
             url = f"https://export.arxiv.org/api/query?search_query=cat:{cat}&start={start}&max_results={MAX_RESULTS_PER_PAGE}"
-
             headers = {
-                "User-Agent": "ResearchLens/0.1 (mailto:shahilabdul001@gmail.com)"
+                "User-Agent": "ResearchLens/0.1 (mailto:shahilabdul001@gmail.com,janhagnberger@gmail.com)"
             }
 
             session = requests.Session()
@@ -58,6 +55,7 @@ def run_data_preprocess():
             root = ET.fromstring(response.content)
             ns = {'atom': 'http://www.w3.org/2005/Atom'}
 
+            # 1.1 Extract paper details from XML response and store in the database
             for entry in root.findall('atom:entry', ns):
                 arxiv_id = entry.find('atom:id', ns).text.split('/')[-1]
                 title = entry.find('atom:title', ns).text.strip()

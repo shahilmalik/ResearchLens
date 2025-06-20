@@ -1,15 +1,13 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react'
-import FreeSolo from './components/basicComponents/Search'
 import MediaCard from './components/basicComponents/Card'
-import BasicDateRangePicker from './components/basicComponents/DateRange'
 import BasicDatePicker from './components/basicComponents/DateRange'
 import Search from './components/basicComponents/Search'
 import MultipleSelectChip from './components/basicComponents/MultiSelectChip'
-import Dialogs from './components/basicComponents/DialogPage'
 import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
 import SearchIcon from '@mui/icons-material/Search';
+import StartProcessingBox from './components/basicComponents/StartProcessing';
 
 // pagination
 import Pagination from '@mui/material/Pagination';
@@ -91,6 +89,9 @@ function Page() {
       <MultipleSelectChip categoryChange={categoryChange}/>
       <button type="submit" onChange={load}>Search</button>
       </div>
+      <div>
+        <StartProcessingBox/>
+      </div>
       <div className="flex flex-1 items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-4">
           <CircularProgress size={100} thickness={2.0} />
@@ -110,6 +111,9 @@ function Page() {
       <MultipleSelectChip categoryChange={categoryChange}/>
       <button type="submit" onChange={load}>Search</button>
       </div>
+      <div>
+        <StartProcessingBox/>
+      </div>
       <div className="flex flex-1 items-center justify-center min-h-[60vh]">
       <div className="flex flex-col items-center gap-4">
         <span className="text-lg text-gray-600">Something went wrong. Cloud not fetch data from backend :(</span>
@@ -121,6 +125,10 @@ function Page() {
 
   return (
     <div className='p-4 flex flex-col gap-4'>
+      <div>
+        <StartProcessingBox/>
+      </div>
+      <hr className='my-4'/>
       <div className='flex items-center gap-4 justify-between'>
       <Search onChange={searchChange} onEnter={() => load(0)}/>
       <BasicDatePicker label="From Date" onChange={startDateChange}/>   

@@ -6,9 +6,11 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
-COPY backend/ /app
+COPY backend/requirements.txt /app/requirements.txt
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
+
+COPY backend/ /app
 
 CMD ["gunicorn", "researchlens.wsgi:application", "--bind", "0.0.0.0:8000"]

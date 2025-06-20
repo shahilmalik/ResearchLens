@@ -14,7 +14,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 @api_view(['POST'])
 def start_fetch(request):
-    run_data_preprocess.delay()  
+    number_articles = int(request.GET.get("number_articles", 10))
+    categories = request.GET.get("categories", ",".join(['cs', 'math'])).split(',')
+    print(f"Starting data fetch with {number_articles} articles from categories: {categories}")
+    run_data_preprocess.delay(number_articles, categories)
     return Response({"status": "Data fetching and preprocessing started"})
 
 class PaperListView(generics.ListAPIView):
