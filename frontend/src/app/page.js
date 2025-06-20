@@ -33,6 +33,9 @@ function Page() {
         setData(data)
         setLoading(false)
       })
+      .catch(error => {
+        setLoading(false)
+      })
   }, [])
 
   // update query when search input is changed
@@ -76,59 +79,18 @@ function Page() {
         setData(data)
         setLoading(false)
       })
+      .catch(error => {
+        setLoading(false)
+      })
   }
 
-  // show spinner while loading
-  if (isLoading){
-    return (
-      <div className='p-4 flex flex-col gap-4'>
-      <div className='flex items-center gap-4 justify-between'>
-      <Search onChange={searchChange} onEnter={() => load(0)}/>
-      <BasicDatePicker label="From Date"/>   
-      <BasicDatePicker label="To Date"/>
-      <MultipleSelectChip categoryChange={categoryChange}/>
-      <button type="submit" onChange={load}>Search</button>
-      </div>
-      <div>
-        <StartProcessingBox/>
-      </div>
-      <div className="flex flex-1 items-center justify-center min-h-[60vh]">
-        <div className="flex flex-col items-center gap-4">
-          <CircularProgress size={100} thickness={2.0} />
-          <span className="text-lg text-gray-600">Loading articles...</span>
-        </div>
-      </div>
-      </div>
-    )
-  // no data found
-  } else if (!data){
-    return (
-      <div className='p-4 flex flex-col gap-4'>
-      <div className='flex items-center gap-4 justify-between'>
-      <Search onChange={searchChange} onEnter={() => load(0)}/>
-      <BasicDatePicker label="From Date"/>   
-      <BasicDatePicker label="To Date"/>
-      <MultipleSelectChip categoryChange={categoryChange}/>
-      <button type="submit" onChange={load}>Search</button>
-      </div>
-      <div>
-        <StartProcessingBox/>
-      </div>
-      <div className="flex flex-1 items-center justify-center min-h-[60vh]">
-      <div className="flex flex-col items-center gap-4">
-        <span className="text-lg text-gray-600">Something went wrong. Cloud not fetch data from backend :(</span>
-      </div>
-      </div>
-      </div>
-    )
-  }
 
   return (
     <div className='p-4 flex flex-col gap-4'>
       <div>
         <StartProcessingBox/>
       </div>
-      <hr className='my-4'/>
+      <hr className="my-5"/>
       <div className='flex items-center gap-4 justify-between'>
       <Search onChange={searchChange} onEnter={() => load(0)}/>
       <BasicDatePicker label="From Date" onChange={startDateChange}/>   
@@ -141,21 +103,40 @@ function Page() {
         Search
       </Button>
       </div>
-      <p>Found {data.total_items} articles.</p>
-      <div className='gap-4 p-4'>
-        {data.results.length > 0
-        ? data.results.map((data,index)=>(
-              <MediaCard key={index} data={data} learnMore />
-        ))
-        : <div className="flex flex-1 items-center justify-center min-h-[60vh]">
+      {isLoading && !data
+      ? <div className="flex flex-1 items-center justify-center min-h-[60vh]">
+          <div className="flex flex-col items-center gap-4">
+            <CircularProgress size={100} thickness={2.0} />
+            <span className="text-lg text-gray-600">Loading articles...</span>
+          </div>
+        </div>
+      : <div>
+        {!isLoading && !data
+        ? <div className="flex flex-1 items-center justify-center min-h-[60vh]">
             <div className="flex flex-col items-center gap-4">
-              <span className="text-lg text-gray-600">No articles to show :(</span>
+              <span className="text-lg text-gray-600">Something went wrong. Cloud not fetch data from backend :(</span>
             </div>
           </div>
+        : <div>
+          <p>Found {data.total_items} articles.</p>
+          <div className="gap-4 p-4">
+            {data.results.length > 0
+            ? data.results.map((data,index)=>(
+                  <MediaCard key={index} data={data} learnMore />
+            ))
+            : <div className="flex flex-1 items-center justify-center min-h-[60vh]">
+                <div className="flex flex-col items-center gap-4">
+                  <span className="text-lg text-gray-600">No articles to show :(</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+        }
+        </div>
       }
-      </div>
-        {/* <Dialogs open={open} setOpen={setOpen} /> */}
-      <div className='flex justify-center mb-10'>
+      {data
+      ? <div className='flex justify-center mb-10'>
       <Stack spacing={2}>
       <Pagination
         count={data.total_pages}
@@ -171,6 +152,8 @@ function Page() {
       />
     </Stack>
     </div>
+    : null
+      }
     </div>
   )
 }

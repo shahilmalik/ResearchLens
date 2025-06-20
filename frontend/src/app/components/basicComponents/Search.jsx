@@ -4,6 +4,7 @@ It allows users to type in a search query and triggers an action when the Enter 
 */
 
 import React from "react";
+import TextField from '@mui/material/TextField';
 
 function Search({onChange, onEnter}) {
   // allow user to press enter to trigger search for convenience
@@ -14,10 +15,9 @@ function Search({onChange, onEnter}) {
   }
 
   return (
-    <input
+    <TextField
       type="text"
       placeholder="Search"
-      className="focus:border-2 focus:border-black border-black border-1 h-[3.5rem] rounded-[10px] p-2"
       style={{ width: "50%" }}
       onChange={onChange}
       onKeyUp={handleKeyDown}

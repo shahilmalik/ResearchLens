@@ -66,15 +66,11 @@ export default function MultipleSelectChip({categoryChange}) {
           "& .MuiOutlinedInput-root": {
             borderRadius: "10px",
             "& fieldset": {
-              borderColor: "black",
               borderRadius: "10px",
             },
             "&:hover fieldset": {
               borderColor: "black",
-            },
-            "&.Mui-focused fieldset": {
-              borderColor: "black",
-            },
+            }
           },
         }}
       >
