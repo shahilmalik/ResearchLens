@@ -1,3 +1,12 @@
+> [!IMPORTANT]  
+> There are two versions of the project that differ in the backend implementation. The first version (main branch) uses
+the Object Relational Mapper (ORM) from Django to interact with the database, which is a convenient way to interact with
+the database using Python objects. This means, that you can define your database schema using Python classes and Django
+will handle the SQL queries for you. For instance, if you would like to get all papers, ORM executes a SQL query in the 
+background to select all papers and outputs a list of Paper objects. However, the goal of the course and project is to
+learn how to use databases and to write SQL queries directly. Therefore, the second version (custom-queries branch) does
+not use Django ORM, but instead uses raw SQL queries to interact with the database. Both versions have the same functionality.
+
 # Text Technology Project at University of Stuttgart: ResearchLens: Scraping, Storing, and Analyzing Scholarly Information
 
 The project "ResearchLens: Scraping, Storing, and Analyzing Scholarly Information" aims to provide
