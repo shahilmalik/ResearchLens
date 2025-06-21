@@ -96,7 +96,7 @@ export default function Dialogs({ open, setOpen, paperId}) {
     </>
   );
   // no data found
-  } else if (!data){
+  } else if (!data || data.length == 0) {
     return (
     <>
       <Dialog

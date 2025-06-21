@@ -91,7 +91,7 @@ def run_data_preprocess(number_articles, categories):
             # 3.2 Calculate pairwise similarities and store in the database
             papers = list(Paper.objects.exclude(embedding=None))
             for i, paper1 in enumerate(papers):
-                for j, paper2 in enumerate(papers, start=i+1):
+                for j, paper2 in enumerate(papers[i+1:]):
                     score = float(util.cos_sim(np.array(paper1.embedding), np.array(paper2.embedding)))
                     if score >= 0.75:
                         PaperSimilarity.objects.get_or_create(
