@@ -1,5 +1,3 @@
-import json
-
 class Author():
     
     def __init__(self, id="", name="", institution=None):
@@ -39,4 +37,20 @@ class Paper():
             "link": self.link,
             "categories": self.categories,
             "published_date": self.published_date.isoformat() if self.published_date else None,
+        }
+
+class PaperSimilarity():
+    def __init__(self, source_paper=None, target_paper=None, similarity_score=0.0):
+        self.source_paper = source_paper
+        self.target_paper = target_paper
+        self.similarity_score = similarity_score
+
+    def __str__(self):
+        return f"{self.source_paper.title} <-> {self.target_paper.title} : {self.similarity_score}"
+    
+    def to_dict(self):
+        return {
+            "source_paper": self.source_paper.to_dict(),
+            "target_paper": self.target_paper.to_dict(),
+            "similarity_score": self.similarity_score,
         }
