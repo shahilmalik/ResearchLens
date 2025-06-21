@@ -1,5 +1,5 @@
 from django.db import connection
-from .custom_models import Paper, Author
+from .models import Paper, Author
 import json
 import numpy as np
 
@@ -193,6 +193,9 @@ class PaperMapper:
             cursor.execute(count_query, count_params)
             ids = [r[0] for r in cursor.fetchall()]
             total_count = len(ids)
+            
+            if total_count == 0:
+                return 0, []
             
             # Apply pagination
             page_ids = ids[(page - 1) * page_size: page * page_size]

@@ -1,16 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .tasks import run_data_preprocess
-from django.db.models import F
-from pgvector.django import L2Distance
-from rest_framework import generics, filters
-from .models import Paper
-from .serializers import PaperSerializer
-from .pagination import CustomPagination
 from rest_framework.views import APIView
-from django.shortcuts import get_object_or_404
-from .filters import PaperFilter
-from django_filters.rest_framework import DjangoFilterBackend
 
 # custom object relational mappers (ORMs) to explicitly handle database interactions
 from .object_relational_mapper import PaperMapper, RelatedPaperMapper

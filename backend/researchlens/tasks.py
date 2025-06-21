@@ -1,7 +1,6 @@
 from celery import shared_task
 import requests
 import xml.etree.ElementTree as ET
-from .models import Paper, Author, PaperSimilarity
 from sentence_transformers import SentenceTransformer, util
 from keybert import KeyBERT
 import numpy as np
@@ -105,7 +104,7 @@ def run_data_preprocess(number_articles, categories):
             # # 3.2 Calculate pairwise similarities and store in the database
             papers = paper_mapper.get_excluded(embedding=None)
             for i, paper1 in enumerate(papers):
-                for j, paper2 in enumerate(papers, start=i+1):
+                for j, paper2 in enumerate(papers[i+1:]):
                     score = float(util.cos_sim(np.array(paper1.embedding), np.array(paper2.embedding)))
                     if score >= 0.75:
                         paper_similarity_mapper.get_or_create(
