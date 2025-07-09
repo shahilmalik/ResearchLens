@@ -1,13 +1,15 @@
 from celery import shared_task
 import requests
 import xml.etree.ElementTree as ET
-from .models import Paper, Author, PaperSimilarity
 from sentence_transformers import SentenceTransformer, util
 from keybert import KeyBERT
 import numpy as np
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import time
+
+# import our custom mapper
+from .object_relational_mapper import PaperMapper, AuthorMapper, PaperSimilarityMapper
 
 @shared_task
 def run_data_preprocess(number_articles, categories):
@@ -22,6 +24,9 @@ def run_data_preprocess(number_articles, categories):
         'q-bio': 'Quantitative Biology',
         'q-fin': 'Quantitative Finance'
     }
+    paper_mapper = PaperMapper()
+    author_mapper = AuthorMapper()
+    paper_similarity_mapper = PaperSimilarityMapper()
 
     for cat in categories:
         MAX_RESULTS_PER_PAGE = 100
@@ -62,41 +67,49 @@ def run_data_preprocess(number_articles, categories):
                 abstract = entry.find('atom:summary', ns).text.strip()
                 published = entry.find('atom:published', ns).text[:10]
 
-                paper, created = Paper.objects.get_or_create(
+                # Add paper to the paper table
+                paper, _ = paper_mapper.get_or_create(
                     arxiv_id=arxiv_id,
-                    defaults={'title': title, 'abstract': abstract, 'published_date': published, 'categories' : category_name, 'link': entry.find('atom:id', ns).text.strip()}
+                    defaults={'title': title, 'abstract': abstract, 'published_date': published, 'categories': category_name, 'link': entry.find('atom:id', ns).text.strip()}
                 )
 
-                authors = entry.findall('atom:author', ns)
+                # Add the author(s) to the paper and database
+                authors = list(set(entry.findall('atom:author', ns))) # Use set to avoid duplicates
+                paper_authors = []
                 for author in authors:
                     name = author.find('atom:name', ns).text.strip()
-                    author_obj, _ = Author.objects.get_or_create(name=name)
-                    paper.authors.add(author_obj)
+                    author_obj, _ = author_mapper.get_or_create(name=name)
+                    paper_authors.append(author_obj)
+                    
+                # Update the paper with the author
+                paper.authors = paper_authors
+                paper_mapper.update(paper)
+
 
             # 2. Extract keywords if not already done
-            papers = Paper.objects.filter(keywords=[])
+            papers = paper_mapper.get_filtered(keywords=[])
             for paper in papers:
                 keywords = kw_model.extract_keywords(paper.abstract, top_n=10)
                 paper.keywords = [kw[0] for kw in keywords]
-                paper.save()
+                paper_mapper.update(paper)
             
             # 3. Build similarity graph
             # 3.1 Generate embeddings for each paper if not already done
-            papers = Paper.objects.filter(embedding=None)
+            papers = paper_mapper.get_filtered(embedding=None)
             for paper in papers:
                 embedding = model.encode(paper.abstract).tolist()
                 paper.embedding = embedding
-                paper.save()
+                paper_mapper.update(paper)
             
-            # 3.2 Calculate pairwise similarities and store in the database
-            papers = list(Paper.objects.exclude(embedding=None))
+            # # 3.2 Calculate pairwise similarities and store in the database
+            papers = paper_mapper.get_excluded(embedding=None)
             for i, paper1 in enumerate(papers):
                 for j, paper2 in enumerate(papers[i+1:]):
                     score = float(util.cos_sim(np.array(paper1.embedding), np.array(paper2.embedding)))
                     if score >= 0.75:
-                        PaperSimilarity.objects.get_or_create(
-                            source_paper=paper1,
-                            target_paper=paper2,
+                        paper_similarity_mapper.get_or_create(
+                            source_paper_id=paper1.id,
+                            target_paper_id=paper2.id,
                             similarity_score=score
                         )
             

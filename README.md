@@ -5,7 +5,7 @@ the database using Python objects. This means, that you can define your database
 will handle the SQL queries for you. For instance, if you would like to get all papers, ORM executes a SQL query in the 
 background to select all papers and outputs a list of Paper objects. However, the goal of the course and project is to
 learn how to use databases and to write SQL queries directly. Therefore, the second version (custom-queries branch) does
-not use Django ORM, but instead uses raw SQL queries to interact with the database. Both versions have the same functionality, however, they cannot use the same database.
+not use Django ORM, but instead uses raw SQL queries to interact with the database. Both versions have the same functionality.
 
 # Text Technology Project at University of Stuttgart: ResearchLens: Scraping, Storing, and Analyzing Scholarly Information
 
@@ -16,7 +16,8 @@ abstracts, and metadata.
 ## Features
 
 - Collecting a set of scientific documents
-- Search for scientific documents and get related documents
+- Compute keywords and embeddings for the documents
+- Search for scientific documents and get related documents based on the embeddings
 
 ## Setup
 
@@ -54,11 +55,14 @@ docker compose up
 
 #### Schema
 The project uses PostgreSQL as the database management system. The database runs in a Docker container for an easy setup
-and will be automatically created and configured when the application is started. The database schema is defined via the models in
-[`backend/researchlens/models.py`](backend/researchlens/models.py) file.
+and will be automatically created and configured when the application is started. The database schema is defined in the 
+[`backend/researchlens/migrations/0001_initial.py`](backend/researchlens/migrations/0001_initial.py) file, which
+contains the commands to create the tables and their relationships.
 
 #### Insertions and Queries
-We use Django's Object Relational Mapper (ORM) to interact with the database in the main branch.
+We implemented several classes in [`backend/researchlens/object_relational_mapper.py`](backend/researchlens/object_relational_mapper.py)
+to interact with the database. These classes map between Python objects and the rows in the tables and have operations to
+insert, update, and filter rows from the database.
 
 ### XML
 The API from arXiv provides the data in XML format. We use the `xml.etree.ElementTree` module from Python's standard library
