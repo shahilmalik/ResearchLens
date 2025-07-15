@@ -1,10 +1,10 @@
 > [!IMPORTANT]  
-> There are two versions of the project that differ in the backend implementation. The first version (main branch) uses
+> There are two versions of the project that differ in the backend implementation. The first version (current branch, django-orm branch) uses
 the Object Relational Mapper (ORM) from Django to interact with the database, which is a convenient way to interact with
 the database using Python objects. This means, that you can define your database schema using Python classes and Django
 will handle the SQL queries for you. For instance, if you would like to get all papers, ORM executes a SQL query in the 
 background to select all papers and outputs a list of Paper objects. However, the goal of the course and project is to
-learn how to use databases and to write SQL queries directly. Therefore, the second version (custom-queries branch) does
+learn how to use databases and to write SQL queries directly. Therefore, the second version (main branch) does
 not use Django ORM, but instead uses raw SQL queries to interact with the database. Both versions have the same functionality, however, they cannot use the same database.
 
 # Text Technology Project at University of Stuttgart: ResearchLens: Scraping, Storing, and Analyzing Scholarly Information
@@ -71,4 +71,4 @@ We use several small extensions to enhance the functionality of the project:
 - Cascade delete: We use `ON DELETE CASCADE` in the database schema to automatically delete related rows when a row is deleted. This is useful to keep the database clean and avoid unused rows. 
 - datatype JSON: We use the JSON data type to store the keywords of the documents in the database. This is convenient to store
   the keywords as a list of strings and query them easily.
-- Django ORM: In the main branch, we use Django's Object Relational Mapper (ORM) to interact with the database. This allows us to define the database schema using Python classes and provides a convenient way to query the database using Python objects. This is useful for large projects where you want to avoid writing raw SQL queries and instead use Python objects to interact with the database. However, for the purpose of this course and project, we also provide a version that uses raw SQL queries to interact with the database (see custom-queries branch).
+- Django ORM: In the main branch, we use Django's Object Relational Mapper (ORM) to interact with the database. This allows us to define the database schema using Python classes and provides a convenient way to query the database using Python objects. This is useful for large projects where you want to avoid writing raw SQL queries and instead use Python objects to interact with the database. However, for the purpose of this course and project, we also provide a version that uses raw SQL queries to interact with the database (see main branch).
