@@ -1,5 +1,5 @@
 /*
-This is a React component that renders a information text and a button to start processing data.
+This is a React component that renders an information text and a button to start processing data.
 */
 
 import React from "react";
@@ -12,6 +12,7 @@ function StartProcessingBox({onChange, onEnter}) {
   const [numberOfArticles, setNumberOfArticles] = React.useState(10);
   const [categories, setCategories] = React.useState([]);
 
+  // Map of categories to their corresponding arXiv identifiers
   const ARXIV_CATEGORY_MAP = {
     'Computer Science': 'cs',
     'Mathematics': 'math',
@@ -22,14 +23,14 @@ function StartProcessingBox({onChange, onEnter}) {
     'Quantitative Finance': 'q-fin'
   }
 
-  // start processing with the given number of articles
+  // Start processing with the given number of articles by calling the backend API
   const load = () => {
+    // Construct the URL parameters for the API call
     const params = new URLSearchParams({"number_articles": numberOfArticles})
     if (categories.length > 0) params.append('categories', categories.map(cat => ARXIV_CATEGORY_MAP[cat]).join(','))
     
     fetch(`http://localhost:8000/api/start-preprocess/?${params.toString()}`, {
       method: "POST",
-      
     }).then((res) => res.json())
       .then((data) => {
         console.log("Processing started:", data);
@@ -38,6 +39,7 @@ function StartProcessingBox({onChange, onEnter}) {
 
   return (
     <Box>
+      { /* Information text about the scaping and processing steps */ }
       <Paper
         elevation={3}
         sx={{
@@ -58,6 +60,7 @@ function StartProcessingBox({onChange, onEnter}) {
           and KeyBERT to compute keywords.
         </Typography>
       </Paper>
+      { /* Form with number of articles and categories */ }
       <div className='flex items-center gap-4'>
         <MultipleSelectChip categoryChange={(e) => setCategories(e)}/>
         <TextField

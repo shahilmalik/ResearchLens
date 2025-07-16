@@ -41,6 +41,7 @@ export default function Dialogs({ open, setOpen, paperId}) {
   const [data, setData] = useState(null)
   const [isLoading, setLoading] = useState(true)
   
+  // Fetch related articles from the backend when the dialog is opened
   useEffect(() => {
     fetch(`http://localhost:8000/api/related/${paperId}/`, {method: 'GET'})
       .then((res) => res.json())
@@ -50,7 +51,7 @@ export default function Dialogs({ open, setOpen, paperId}) {
       })
   }, [])
 
-  // show spinner while loading
+  // Show spinner while loading
   if (isLoading){
     return (
     <>
@@ -95,7 +96,7 @@ export default function Dialogs({ open, setOpen, paperId}) {
       </Dialog>
     </>
   );
-  // no data found
+  // No data found
   } else if (!data || data.length == 0) {
     return (
     <>

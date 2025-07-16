@@ -1,3 +1,7 @@
+"""
+This module contains a custom pagination class for the ResearchLens application.
+It defines how paginated responses are structured, including metadata about the pagination state.
+"""
 
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response

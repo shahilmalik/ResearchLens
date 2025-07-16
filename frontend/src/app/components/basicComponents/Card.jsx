@@ -21,7 +21,10 @@ export default function MediaCard({ data, learnMore = false }) {
   const handleClickOpen = () => {
     setOpen(true);
   };
+
+  // Remove leading and trailing whitespace from keywords
   const keywordArray = data.keywords.map((k) => k.trim());
+
   return (
     <Card
       sx={{
@@ -39,7 +42,6 @@ export default function MediaCard({ data, learnMore = false }) {
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
           {data.abstract}
         </Typography>
-
         <Typography>
           Published on:{" "}
           <span className="font-bold text-sm text-blue-900">

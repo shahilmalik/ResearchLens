@@ -1,3 +1,5 @@
+"""This module contains filters for the ResearchLens application, allowing for filtering of research papers based on various criteria."""
+
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateFilter, CharFilter
 from .models import Paper
 

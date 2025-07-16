@@ -7,7 +7,7 @@ import React from "react";
 import TextField from '@mui/material/TextField';
 
 function Search({onChange, onEnter}) {
-  // allow user to press enter to trigger search for convenience
+  // Allow user to press enter to trigger search for convenience
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
       onEnter()
