@@ -34,9 +34,9 @@ const names = [
   "Quantitative Finance",
 ];
 
-function getStyles(name, personName, theme) {
+function getStyles(name, categoryName, theme) {
   return {
-    fontWeight: personName.includes(name)
+    fontWeight: categoryName.includes(name)
       ? theme.typography.fontWeightMedium
       : theme.typography.fontWeightRegular,
   };
@@ -44,13 +44,13 @@ function getStyles(name, personName, theme) {
 
 export default function MultipleSelectChip({categoryChange}) {
   const theme = useTheme();
-  const [personName, setPersonName] = React.useState([]);
+  const [categoryName, setCategoryName] = React.useState([]);
 
   const handleChange = (event) => {
     const {
       target: { value },
     } = event;
-    setPersonName(
+    setCategoryName(
       // On autofill we get a stringified value.
       typeof value === "string" ? value.split(",") : value
     );
@@ -87,7 +87,7 @@ export default function MultipleSelectChip({categoryChange}) {
           labelId="demo-multiple-chip-label"
           id="demo-multiple-chip"
           multiple
-          value={personName}
+          value={categoryName}
           onChange={handleChange}
           input={<OutlinedInput id="select-multiple-chip" label="Category" />}
           renderValue={(selected) => (
@@ -103,7 +103,7 @@ export default function MultipleSelectChip({categoryChange}) {
             <MenuItem
               key={name}
               value={name}
-              style={getStyles(name, personName, theme)}
+              style={getStyles(name, categoryName, theme)}
             >
               {name}
             </MenuItem>
