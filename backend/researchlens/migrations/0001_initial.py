@@ -1,3 +1,9 @@
+"""
+This migration script handles the data models of the application and sets up the initial database schema for the
+researchlens app. It includes the creation of necessary tables and the vector extension for handling embeddings.
+It also establishes relationships between papers and authors, and between papers themselves for similarity scoring.
+"""
+
 from django.db import migrations
 
 

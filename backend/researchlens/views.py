@@ -1,3 +1,8 @@
+"""
+This file contains the views for the ResearchLens application, including API endpoints for fetching and processing research papers.
+The file contains only little code because the actual logic is implemented in the our custom object relational mapper (ORM).
+"""
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .tasks import run_data_preprocess
@@ -8,6 +13,8 @@ from .object_relational_mapper import PaperMapper, RelatedPaperMapper
 
 @api_view(['POST'])
 def start_fetch(request):
+    """Starts the data fetching and preprocessing task."""
+    
     number_articles = int(request.GET.get("number_articles", 10))
     categories = request.GET.get("categories", ",".join(['cs', 'math'])).split(',')
     print(f"Starting data fetch with {number_articles} articles from categories: {categories}")
@@ -17,6 +24,8 @@ def start_fetch(request):
 
 class PaperListView(APIView):
     def get(self, request):
+        """Fetches a paginated list of papers based on search criteria."""
+        
         search = request.GET.get('search', '')
         start = request.GET.get('start_date', '')
         end = request.GET.get('end_date', '')
@@ -41,6 +50,8 @@ class PaperListView(APIView):
 
 
 class RelatedPapersView(APIView):
+    """Fetches related papers based on a given paper ID."""
+    
     def get(self, request, paper_id):
         mapper = RelatedPaperMapper()
         related_papers = mapper.get(paper_id)

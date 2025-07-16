@@ -71,6 +71,16 @@ The project is structured into several directories, each serving a specific purp
 - `docker-compose.yml`: The Docker Compose file that defines the services, networks, and volumes for the application
 - `.env`: The environment file that contains the database credentials and other environment variables
 
+
+## API Endpoints
+The API endpoints are defined in the `backend/researchlens/urls.py` file and the logic is implemented in the `backend/researchlens/views.py` file. The backend provides the following API endpoints.
+
+- `api/start-preprocess/`: Starts scraping data from arXiv and processing it. You can specify the number of articles to scrape and the categories to scrape from by passing them as query parameters (e.g., `?number_articles=100&categories=cs`).
+- `api/paper/`: Returns a paginated list of papers based on search criteria. You can filter the papers by text, publication date, and categories by passing them as query parameters (e.g., `?search=ocean&categories=Statistics&start_date=2025-07-14&end_date=2025-07-16`).
+- `api/related/<int:paper_id>/`: Returns a list of related papers for a given paper ID. The related papers are computed based on the embeddings of the papers.
+- `admin/`: The Django admin interface
+   
+
 ## Technologies Used
 
 ### Database
@@ -117,12 +127,12 @@ CREATE TABLE IF NOT EXISTS researchlens_papersimilarity (
 );
 ```
 
-The data is stored in three tables. The table `paper` contains the papers with information such as the title, abstract, publication date, and categories. The authors are stored in a separate table `author`, which is linked to the `paper` table via a many-to-many relationship. The table `auhor_paper` is used to store the relationship between authors and papers. The table `papersimilarity` is used to store the similarity between papers based on their embeddings. However, it is not used in the application, because we compute the similarity on-the-fly when the user requests related papers. Nevertheless, this table may be be useful to speed up the retrieval of related papers in the future.
+The main data is stored in three tables. The table `paper` contains the papers with information such as the title, abstract, publication date, and categories. The authors are stored in a separate table `author`, which is linked to the `paper` table via a many-to-many relationship. The table `auhor_paper` is used to store the relationship between authors and papers. The table `papersimilarity` is used to store the similarity between papers based on their embeddings. However, it is not used in the application, because we compute the similarity on-the-fly when the user requests related papers. Nevertheless, this table may be be useful to speed up the retrieval of related papers in the future.
 
 #### Insertions and Queries
 We implemented several classes in [`backend/researchlens/object_relational_mapper.py`](backend/researchlens/object_relational_mapper.py)
 to interact with the database. These classes map between Python objects and the rows in the tables and have operations to
-insert, update, and filter rows from the database. We essentially implemented a custom Object Relational Mapper (ORM). The advantage of this approach is that we can use Python objects in our application to interact with the database and that we have abstracted from raw SQL queries. In a practical application, you would use a library like SQLAlchemy or Django ORM to achieve this. However, for the purpose of this course and project, we implemented our own ORM to understand how it works under the hood. We also provide a version that actually uses Django ORM (see django-orm branch).
+insert, update, and filter rows from the database. We essentially implemented a custom Object Relational Mapper (ORM). The advantage of this approach is that we can use Python objects in our application to interact with the database and that we have abstracted from raw SQL queries. The models (i.e., Python classes) are defined in [`backend/researchlens/models.py`](backend/researchlens/models.py). In a practical application, you would use a library like SQLAlchemy or Django ORM to achieve this. However, for the purpose of this course and project, we implemented our own ORM to understand how it works under the hood. We also provide a version that actually uses Django ORM (see django-orm branch).
 
 ### Search Functionality
 The search functionality is also implemented in the [`backend/researchlens/object_relational_mapper.py`](backend/researchlens/object_relational_mapper.py). The method `get()` of the class `PaperMapper` takes as input optional search parameters such as text, publication date, and categories. It then dynamically constructs a SQL query based on the provided parameters and executes it to retrieve the matching papers from the database. The results are returned as a list of `Paper` objects. We use the following operations to build the query:
@@ -153,7 +163,7 @@ The functionality to get related papers is also implemented in the [`backend/res
 - `ORDER BY p.embedding <-> '[-0.19108926,0.043524727,...]' ASC`: To sort based on the L2 distance in an ascending order.
 - `LIMIT`: To limit the number of results to a specific number (e.g., 10).
 
-This is how an example query looks like to retrieve related papers based on the L2 distance  embedding of a paper with a specific ID (e.g., `paper_id = 12345`):
+This is how an example query looks like to retrieve related papers based on the L2 distance of the embeddings. It essentially computes the L2 distance between the embedding of a given paper and sorts the results in an ascending order to get the 10 most similar papers.
 ```sql
 SELECT p.id, p.arxiv_id, p.title, p.abstract, p.keywords, p.published_date, p.link, p.categories, a.id, a.name
 FROM researchlens_paper p

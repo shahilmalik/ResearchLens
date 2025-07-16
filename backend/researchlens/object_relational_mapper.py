@@ -1,3 +1,10 @@
+"""
+This module provides a custom object-relational mapper (ORM) for the ResearchLens application, which allows us to
+abstract database operations and interact with the data models in a more Pythonic way. It includes classes for managing
+papers, authors, and their relationships in the database. Additionally, it provides methods to fetch papers based
+on search critera as well as to retrieve related papers based on embedding similarity.
+"""
+
 from django.db import connection
 from .models import Paper, Author
 import json
@@ -5,7 +12,8 @@ import numpy as np
 
 
 class PaperMapper:
-    """This class is responsible for mapping the Paper model to the database and providing methods to fetch, create, and update papers from the database."""
+    """This class is responsible for mapping the Paper model to the database and providing methods to fetch, create, 
+    and update papers from the database."""
     
     def __init__(self):
         self.paper_table_name = 'researchlens_paper'
@@ -13,9 +21,11 @@ class PaperMapper:
         self.paper_authors_table_name = 'researchlens_paper_authors'
     
     def get_filtered(self, **kwargs):
-        """Fetch all papers from the database ordered by publication date and filtered by the provided filtering elements."""
+        """Fetch all papers from the database ordered by publication date and filtered by the provided filtering elements.
+        Only the embedding and keywords can be filtered at the moment."""
         
-        # Initialize the where clause filters
+        # Initialize the where clause filters and the corresponding parameters.
+        # This will be used to build the SQL query dynamically based on the provided kwargs (filtering elements).
         filters = []
         filter_params = []
         
@@ -40,7 +50,7 @@ class PaperMapper:
                 "ORDER BY p.published_date DESC;"
             )
             
-            # Execute the query with parameters
+            # Execute the query with arguments (true parameter values)
             cursor.execute(query, filter_params)
             
             # Fetch all rows and construct Paper and Author objects
@@ -78,7 +88,8 @@ class PaperMapper:
         return list(papers.values())
     
     def get_excluded(self, **kwargs):
-        """Fetch all papers from the database ordered by publication date and that excludes paper that matches the given criterion."""
+        """Fetch all papers from the database ordered by publication date and that excludes paper that matches the given criterion.
+        Currently, only the embedding can be excluded."""
         
         # Initialize the where clause filters
         filters = []
@@ -146,12 +157,14 @@ class PaperMapper:
         
         papers = {}
         with connection.cursor() as cursor:
-            # Intialize the where clause filters
+            # Initialize the where clause filters and parameters
+            # This will be used to build the SQL query dynamically based on the provided search
             filters = []
             filter_params = []
             
             # Apply filters based on search, start_date, end_date, and categories by appending it to the WHERE clause
             if search != "":
+                # We use the full-text search capabilities of PostgreSQL to search in the title, abstract, and author names.
                 filters.append("to_tsvector('english', p.title || ' ' || p.abstract || ' ' || a.name) @@ plainto_tsquery('english', %s)")
                 filter_params.append(search)
             if start_date:
@@ -161,6 +174,7 @@ class PaperMapper:
                 filters.append("p.published_date <= %s")
                 filter_params.append(end_date)
             if categories:
+                # We use the IN clause to filter by categories.
                 categories_list = categories.split(',')
                 placeholders = ', '.join(['%s'] * len(categories_list))
                 filters.append(f"p.categories IN ({placeholders})")
@@ -179,7 +193,7 @@ class PaperMapper:
                     "WHERE " + " AND ".join(filters) + "ORDER BY p.published_date DESC;"
                 )
             else:
-                # Same as aboive, but without any filters
+                # Same as above, but without any filters (needed to get all papers)
                 count_query = (
                     "SELECT DISTINCT(p.id), p.published_date "
                     "FROM researchlens_paper p "
@@ -188,7 +202,7 @@ class PaperMapper:
                     "ORDER BY p.published_date DESC;"
                 )
             
-            # Execute the count query to get the total number of papers
+            # Execute the count query to get the total number of papers and their IDs
             count_params = tuple(filter_params)
             cursor.execute(count_query, count_params)
             ids = [r[0] for r in cursor.fetchall()]
@@ -197,7 +211,7 @@ class PaperMapper:
             if total_count == 0:
                 return 0, []
             
-            # Apply pagination
+            # Apply pagination to the list of IDs
             page_ids = ids[(page - 1) * page_size: page * page_size]
             print(page_ids)
             
@@ -251,7 +265,7 @@ class PaperMapper:
         """Fetch a paper by its ID and return it."""
         
         with connection.cursor() as cursor:
-            # Query to get the paper and its authors
+            # Query to get the paper
             query = ("SELECT p.id, p.arxiv_id, p.title, p.abstract, p.keywords, p.published_date, p.link, p.categories "
                 "FROM researchlens_paper p "
                 "WHERE p.arxiv_id = %s")
@@ -292,12 +306,15 @@ class PaperMapper:
                 (arxiv_id, defaults["title"], defaults["abstract"], defaults["published_date"], defaults["categories"], [], defaults["link"])
             )
             paper_id = cursor.fetchone()[0]
+            
+            # And return newly created paper
             return Paper(id=paper_id, arxiv_id=arxiv_id,
                          title=defaults["title"], abstract=defaults["abstract"],
                          published_date=defaults["published_date"], categories=["categories"], link=defaults["link"]), True
     
     def update(self, paper):
-        """Add authors, keywords, and emeddings to a paper. If the author does not exist, it will be created."""
+        """Add authors, keywords, and embeddings to a paper. If the author does not exist, it will be created."""
+        
         with connection.cursor() as cursor:
             # Update the keywords and embedding of the paper
             cursor.execute(
@@ -305,7 +322,8 @@ class PaperMapper:
                 [json.dumps(paper.keywords), paper.embedding, paper.id]
             )
             
-            # Remove all existing authors for the paper
+            # Remove all existing authors for the paper to avoid duplicates. It also ensures that authors will be removed
+            # if they are not present in the new version of the paper anymore.
             cursor.execute("DELETE FROM researchlens_paper_authors WHERE paper_id = %s", [paper.id])
             
             # Add the authors to the paper
@@ -321,7 +339,8 @@ class PaperMapper:
                 
 
 class AuthorMapper:
-    """This class is responsible for mapping the Author model to the database and providing methods to fetch, create, and update authors from the database."""
+    """This class is responsible for mapping the Author model to the database and providing methods to fetch, create,
+    and update authors from the database."""
     
     def __init__(self):
         self.author_table_name = 'researchlens_author'

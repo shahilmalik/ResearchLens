@@ -1,4 +1,11 @@
+"""
+This module defines the data models for the ResearchLens application, including classes for authors, papers, and paper similarities.
+It provides methods for initializing these models and converting them to dictionaries for easy serialization (needed for
+encoding the data into JSON format for the API).
+"""
+
 class Author():
+    """Represents an author in the ResearchLens application."""
     
     def __init__(self, id="", name="", institution=None):
         self.id = id
@@ -7,10 +14,10 @@ class Author():
 
     def __str__(self):
         return str(self.name)
-    
-    
+
 
 class Paper():
+    """Represents a research paper in the ResearchLens application."""
     
     def __init__(self, id="", arxiv_id="", title="", abstract="", published_date=None, authors=None, keywords=None, embedding=None, link=None, categories=""):
         self.id = id
@@ -39,7 +46,10 @@ class Paper():
             "published_date": self.published_date.isoformat() if self.published_date else None,
         }
 
+
 class PaperSimilarity():
+    """Represents the similarity between two research papers in the ResearchLens application."""
+    
     def __init__(self, source_paper=None, target_paper=None, similarity_score=0.0):
         self.source_paper = source_paper
         self.target_paper = target_paper
