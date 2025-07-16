@@ -1,3 +1,9 @@
+"""
+This file contains the Celery tasks for the ResearchLens application. The task includes fetching data from the arXiv API,
+processing it to extract relevant information, computing document embeddings and keywords, and storing it in the database.
+We use Celery for asynchronous task processing to handle potentially long-running operations without blocking the main application.
+"""
+
 from celery import shared_task
 import requests
 import xml.etree.ElementTree as ET
@@ -11,8 +17,11 @@ import time
 
 @shared_task
 def run_data_preprocess(number_articles, categories):
+    # Initialize models for document embeddings and keyword extraction
     model = SentenceTransformer('all-MiniLM-L6-v2')
     kw_model = KeyBERT()
+    
+    # Map categories to human-readable names
     ARXIV_CATEGORY_MAP = {
         'cs': 'Computer Science',
         'math': 'Mathematics',
@@ -23,6 +32,7 @@ def run_data_preprocess(number_articles, categories):
         'q-fin': 'Quantitative Finance'
     }
 
+    # Iterate through each category and fetch papers
     for cat in categories:
         MAX_RESULTS_PER_PAGE = 100
         category_name = ARXIV_CATEGORY_MAP.get(cat, cat)
@@ -52,6 +62,7 @@ def run_data_preprocess(number_articles, categories):
                 print(f"Failed to fetch papers from arXiv: {e}")
                 return
 
+            # response.content contains the response body, which is XML
             root = ET.fromstring(response.content)
             ns = {'atom': 'http://www.w3.org/2005/Atom'}
 
