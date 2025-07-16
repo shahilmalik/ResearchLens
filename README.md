@@ -7,6 +7,8 @@ background to select all papers and outputs a list of paper objects. However, th
 learn how to use databases and to write SQL queries directly. Therefore, the second version (current branch, main branch) does
 not use Django ORM, but instead uses raw SQL queries to interact with the database. Both versions have the same functionality.
 
+<p align="center"><img src="images/logo.png" alt="ResearchLens Logo" width="50%" /></p>
+
 # Text Technology Project at University of Stuttgart: ResearchLens: Scraping, Storing, and Analyzing Scholarly Information
 
 The project "ResearchLens: Scraping, Storing, and Analyzing Scholarly Information" aims to provide
