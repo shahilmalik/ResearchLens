@@ -1,3 +1,5 @@
+--Example entries for the researchlens_author table containing names and institutions of authors.
+--You can use this SQL script to insert sample data into the researchlens_author table.
 INSERT INTO public.researchlens_author (id, name, institution) VALUES (1, 'John Hershey', null);
 INSERT INTO public.researchlens_author (id, name, institution) VALUES (2, 'Stephen F. Bush', null);
 INSERT INTO public.researchlens_author (id, name, institution) VALUES (3, 'Kirby Vosburgh', null);

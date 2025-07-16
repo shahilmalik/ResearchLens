@@ -1,3 +1,5 @@
+--Example entries for the researchlens_paper table containing papers with titles, abstracts, and embeddings.
+--You can use this SQL script to insert sample data into the researchlens_paper table.
 INSERT INTO public.researchlens_paper (id, arxiv_id, title, abstract, published_date, keywords, embedding, categories, link) VALUES (2, '0701021v2', 'The Unix KISS: A Case Study', e'In this paper we show that the initial philosophy used in designing and
 developing UNIX in early times has been forgotten due to "fast practices". We
 question the leitmotif that microkernels, though being by design adherent to
